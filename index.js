@@ -13,10 +13,6 @@ require("dotenv").config({
 app.use(cors());
 app.use(express.json());
 
-if (path === "/test") {
-  return "Test"
-}
-
 
 app.get("/", (req, res) => {
   res.send("Hello world from socket server!");
