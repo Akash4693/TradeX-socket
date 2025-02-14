@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 
 dotenv.config({ path: "./.env" });
 
-const SERVER_URL = process.env.SOCKET_URL || `http://localhost:${process.env.PORT || 4000}`;
+const SERVER_URL = process.env.SOCKET_URL 
 
 // Schedule a GET request every 14 minutes
 const job = new CronJob("*/14 * * * *", async () => {
