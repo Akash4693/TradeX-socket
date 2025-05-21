@@ -5,6 +5,7 @@ const app = express();
 const cors = require("cors");
 const server = http.createServer(app);
 const io = socketIO(server);
+const PORT = process.env.PORT || 4000;
 
 require("dotenv").config({
   path: "./.env",
@@ -13,8 +14,6 @@ require("dotenv").config({
 app.use(cors());
 app.use(express.json());
 
-const PORT = process.env.PORT || 4000;
-
 app.get("/", (req, res) => {
   res.send("Hello world from socket server!");
 });
@@ -22,6 +21,7 @@ app.get("/", (req, res) => {
 let users = [];
 
 const addUser = (userId, socketId) => {
+  console.log(`a addUser is connected`,userId, socketId);
   !users.some((user) => user.userId === userId) &&
     users.push({ userId, socketId });
 };
@@ -31,6 +31,7 @@ const removeUser = (socketId) => {
 };
 
 const getUser = (receiverId) => {
+  console.log(`a user is connected`,users,receiverId);
   return users.find((user) => user.userId === receiverId);
 };
 
@@ -49,6 +50,7 @@ io.on("connection", (socket) => {
 
   // take userId and socketId from user
   socket.on("addUser", (userId) => {
+    console.log(`a addUser is connected`,userId );
     addUser(userId, socket.id);
     io.emit("getUsers", users);
   });
@@ -57,8 +59,8 @@ io.on("connection", (socket) => {
   const messages = {}; // Object to track messages sent to each user
 
   socket.on("sendMessage", ({ senderId, receiverId, text, images }) => {
+    console.log(`sendMessage`, senderId, receiverId, text);
     const message = createMessage({ senderId, receiverId, text, images });
-
     const user = getUser(receiverId);
 
     // Store the messages in the `messages` object
@@ -67,7 +69,8 @@ io.on("connection", (socket) => {
     } else {
       messages[receiverId].push(message);
     }
-
+    
+    console.log(`a user `, user);
     // send the message to the receiver
     io.to(user?.socketId).emit("getMessage", message);
   });
